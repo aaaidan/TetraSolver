@@ -5,6 +5,10 @@ A Teromino puzzle is a grid which you solve by fitting Tetris pieces with no gap
 
 ## Usage
 
+Short answer: check out [https://github.com/aaaidan/TetraSolver/blob/master/problem.js](problem.js) for a working example. 
+
+Longer answer:
+
 1. Create a `Board`
 
         var b = new Tetra.Board(4,7);
