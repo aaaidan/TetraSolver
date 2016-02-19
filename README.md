@@ -1,5 +1,5 @@
 # TetraSolver
-**A "Tetromino" puzzle solver written in Javascript.**
+***Tetromino solver written in Javascript.***
 
 A Teromino puzzle is a grid which you solve by fitting Tetris pieces with no gaps.
 
