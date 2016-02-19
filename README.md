@@ -3,6 +3,13 @@
 
 A Teromino puzzle is a grid which you solve by fitting Tetris pieces with no gaps.
 
+
+    ──┬── ║ 
+    ║ ╵ ╔═╝ 
+    ║ ║ ║ ┃ 
+    ║ ║ ━━┫ 
+    ║ ╚══ ┃ 
+    
 ## Usage
 
 Short answer: check out [problem.js](https://github.com/aaaidan/TetraSolver/blob/master/problem.js) for a working example. 
