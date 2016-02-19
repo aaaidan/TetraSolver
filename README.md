@@ -33,9 +33,22 @@ Longer answer:
         	Tetra.pieces.square,
         ]);
 
-3. Solve it...
+3. Solve it!
 
         solver.solve();
+
+4. After a (hopefully miniscule) time, you get something like:
+
+        Solved!
+        X X E E 
+        X X E E 
+        + + + @ 
+        * + @ @ 
+        * O @ % 
+        * O % % 
+        * O O % 
+        
+        leftovers: [ 'stick' ] 
 
 ## But why!?
 I wrote this because I thought it would be faster and more fun than actually solving the mandatory puzzles in that game that time. One of those predictions came true.
