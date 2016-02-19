@@ -51,4 +51,4 @@ Longer answer:
         leftovers: [ 'stick' ] 
 
 ## But why!?
-I wrote this because I thought it would be faster and more fun than actually solving the mandatory puzzles in that game that time. One of those predictions came true.
+I wrote this because I thought it would be faster and more fun than actually solving the mandatory puzzles in that game that time. At least one of those predictions came true.
