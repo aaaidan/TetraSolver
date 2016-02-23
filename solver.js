@@ -22,16 +22,142 @@ Board.prototype.occupied = function(x,y) {
 	}
 	return false;
 }
-Board.prototype.toString = function() {
+Board.prototype.toString = function(packed) {
 	var str = "";
 	for (var y=0;y<this.height;y++) {
 		for (var x=0;x<this.width;x++) {
-			str += this.data[x][y] + " ";
+			str += this.data[x][y] + (packed ? "" : " ");
 		}
 		str += "\n";
 	}
 	return str;
 };
+Board.prototype.toReallyPrettyString = function() {
+	var input = this.toString(true).trim().split("\n").map(x=>x.split(''));
+
+	var createChecker = function(character, originX, originY) {
+		return function(dx,dy) {
+			var x = originX + dx;
+			var y = originY + dy;
+			if (y < 0 || y >= input.length) {
+				return false;
+			}
+			if (x < 0 || x >= input[0].length) {
+				return false;
+			}
+			return input[y][x] == character;
+		}
+	}
+
+	var result = "";
+
+	input.forEach((row,y)=> {
+		var topString = "";
+		var bottomString = "";
+		row.forEach((cell,x)=>{
+
+			var checker = createChecker(cell, x, y);
+
+			var right = checker(1,0);
+			var up = checker(0,-1);
+			var left = checker(-1,0);
+			var down = checker(0,1);
+
+			var type = 
+				(right ? 1 : 0) +
+				(up ?    2 : 0) +
+				(left ?  4 : 0) +
+				(down ?  8 : 0);
+
+			var glyph = "???\n???";
+			var lookup = [
+				"   \n   ", //       ?
+				"┌──\n└──", // R     ╶    
+				"│ │\n└─┘", //  U    ╵    
+				"│ └\n└──", // RU    └    
+				"──┐\n──┘", //   L   ╴    
+				"───\n───", // R L   ─    
+				"┘ │\n──┘", //  UL   ┘    
+				"┘ └\n───", // RUL   ┴    
+				"┌─┐\n│ │", //    D  ╷    
+				"┌──\n│ ┌", // R  D  ┌    
+				"│ │\n│ │", //  U D  │    
+				"│ └\n│ ┌", // RU D  ├    
+				"──┐\n┐ │", //   LD  ┐    
+				"───\n┐ ┌", // R LD  ┬    
+				"┘ │\n┐ │", //  ULD  ┤    
+				"┘ └\n┐ ┌", // RULD  ┼    
+				];
+			glyph = lookup[type].split('\n');
+			topString += glyph[0];
+			bottomString += glyph[1];
+		});
+		result += topString + "\n" + bottomString + "\n";
+	});
+	return result;
+}
+Board.prototype.toPrettyString = function() {
+	var input = this.toString(true).trim().split("\n").map(x=>x.split(''));
+
+	var createChecker = function(character, originX, originY) {
+		return function(dx,dy) {
+			var x = originX + dx;
+			var y = originY + dy;
+			if (y < 0 || y >= input.length) {
+				return false;
+			}
+			if (x < 0 || x >= input[0].length) {
+				return false;
+			}
+			return input[y][x] == character;
+		}
+	}
+
+	var result = "";
+
+	input.forEach((row,y)=> {
+		row.forEach((cell,x)=>{
+			var checker = createChecker(cell, x, y);
+
+			var right = checker(1,0);
+			var up = checker(0,-1);
+			var left = checker(-1,0);
+			var down = checker(0,1);
+
+			var type = 
+				(right ? 1 : 0) +
+				(up ?    2 : 0) +
+				(left ?  4 : 0) +
+				(down ?  8 : 0);
+
+			var character = "*";
+			var lookup = [
+				"?", // 
+				"╶", // R   
+				"╵", //  U  
+				"└", // RU  
+				"╴", //   L 
+				"─", // R L 
+				"┘", //  UL 
+				"┴", // RUL 
+				"╷", //    D
+				"┌", // R  D
+				"│", //  U D
+				"├", // RU D
+				"┐", //   LD
+				"┬", // R LD
+				"┤", //  ULD
+				"┼", // RULD
+				];
+			character = lookup[type];
+
+			result += character;
+
+		});
+		result += "\n";
+	});
+	return result;
+}
 Board.prototype.isSolved = function() {
 	var board = this;
 	return this.data.every(function(col,x) {
@@ -174,27 +300,6 @@ var bentL = new Piece("bentL", "FL"); // hockeystick --^
 var bentR = new Piece("bentR", "FR"); // hockeystick --,
 var square = new Piece("square", "RR"); // square ::
 
-exports.b = b;
-exports.pieces = {
-	zigL: zigL,
-	zigR: zigR,
-	tee: tee,
-	stick: stick,
-	bentL: bentL,
-	bentR: bentR,
-	square: square
-};
-exports.p = Piece;
-exports.Board = Board;
-exports.UP = UP;
-exports.DOWN = DOWN;
-exports.LEFT = LEFT;
-exports.RIGHT = RIGHT;
-
-console.log("---");
-
-//zigR.printAt("X", 2,0,DOWN,b);
-
 var Solver = function(board, pieces) {
 	this.board = board;
 	this.pieces = pieces;
@@ -204,6 +309,16 @@ var Solver = function(board, pieces) {
 	this.lastReported = new Date().getTime();
 };
 Solver.prototype.solve = function() {
+
+	var randomPieces = [];
+	this.pieces.forEach(p => {
+		randomPieces.splice(
+			Math.floor(Math.random() * randomPieces.length),
+			0,
+			p
+		);
+	});
+	this.pieces = randomPieces;
 
 	//console.log("Solving... Pieces left: " + this.pieces.length);
 
@@ -231,11 +346,6 @@ Solver.prototype.solve = function() {
 					this.moves.push([ piece.name, x, y, direction.name ]);
 					
 					if (this.board.isSolved()) {
-						console.log("Solved!");
-						console.log(this.board.toString());
-						if (this.pieces.length > 0) {
-							console.log("leftovers:", this.pieces.map(function(x) { return x.name; }));
-						}
 						return true;
 					}
 
@@ -273,19 +383,19 @@ Solver.prototype.solve = function() {
 
 };
 
-var b = new Board(4,7);
-console.log(b.toString());
-
-var solver = new Solver(b, [
-	stick,
-	tee,
-	square,
-	zigR,
-	tee,
-	bentL,
-	stick,
-	square,
-]);
-solver.solve();
-
-console.log("Work done: " + solver.work/1000);
+exports.pieces = {
+	zigL: zigL,
+	zigR: zigR,
+	tee: tee,
+	stick: stick,
+	bentL: bentL,
+	bentR: bentR,
+	square: square
+};
+exports.p = Piece;
+exports.Board = Board;
+exports.Solver = Solver;
+exports.UP = UP;
+exports.DOWN = DOWN;
+exports.LEFT = LEFT;
+exports.RIGHT = RIGHT;
